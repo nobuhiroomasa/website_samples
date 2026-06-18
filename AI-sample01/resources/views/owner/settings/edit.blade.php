@@ -17,6 +17,12 @@
 @endphp
 
 @section('content')
+    @if (! file_exists(public_path('storage')))
+        <div class="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            画像プレビューと公開画像の表示には `php artisan storage:link` が必要です。未作成の場合、保存済みでも画像が表示されません。
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('owner.settings.update') }}" enctype="multipart/form-data" class="space-y-8">
         @csrf
         @method('PUT')

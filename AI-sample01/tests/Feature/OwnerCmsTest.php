@@ -204,6 +204,55 @@ class OwnerCmsTest extends TestCase
         Storage::disk('public')->assertExists($seoSetting->og_image_path);
     }
 
+    public function test_existing_site_setting_images_are_retained_when_no_new_file_is_uploaded(): void
+    {
+        Storage::fake('public');
+        $admin = User::factory()->admin()->create();
+        $siteSetting = SiteSetting::current();
+        $seoSetting = SeoSetting::forPage('home');
+
+        $siteSetting->forceFill([
+            'site_title' => '既存サイト',
+            'catch_copy' => '既存コピー',
+            'hero_image_path' => UploadedFile::fake()->image('hero-original.jpg')->store('site', 'public'),
+            'about_image_path' => UploadedFile::fake()->image('about-original.jpg')->store('site', 'public'),
+        ])->save();
+
+        $seoSetting->forceFill([
+            'og_image_path' => UploadedFile::fake()->image('og-original.jpg')->store('seo', 'public'),
+        ])->save();
+
+        $heroImagePath = $siteSetting->hero_image_path;
+        $aboutImagePath = $siteSetting->about_image_path;
+        $ogImagePath = $seoSetting->og_image_path;
+
+        $response = $this->actingAs($admin)->put('/owner/settings', [
+            'site_title' => '更新後サイト',
+            'catch_copy' => '更新後コピー',
+            'description' => 'テキストだけ更新します。',
+            'seo' => [
+                'home' => [
+                    'title' => '更新後SEOタイトル',
+                    'meta_description' => '更新後SEO説明',
+                ],
+            ],
+        ]);
+
+        $response->assertRedirect('/owner/settings')
+            ->assertSessionHas('status');
+
+        $siteSetting->refresh();
+        $seoSetting->refresh();
+
+        $this->assertSame($heroImagePath, $siteSetting->hero_image_path);
+        $this->assertSame($aboutImagePath, $siteSetting->about_image_path);
+        $this->assertSame($ogImagePath, $seoSetting->og_image_path);
+
+        Storage::disk('public')->assertExists($heroImagePath);
+        Storage::disk('public')->assertExists($aboutImagePath);
+        Storage::disk('public')->assertExists($ogImagePath);
+    }
+
     public function test_admin_can_view_inquiries(): void
     {
         $admin = User::factory()->admin()->create();
