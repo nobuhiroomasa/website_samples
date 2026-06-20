@@ -20,8 +20,8 @@
 @endphp
 <body class="min-h-screen bg-slate-100 text-slate-900">
     <div class="flex min-h-screen">
-        <aside class="hidden w-72 shrink-0 border-r border-slate-200 bg-slate-950 text-slate-100 lg:block">
-            <div class="sticky top-0 flex h-screen flex-col">
+        <aside class="hidden w-72 shrink-0 border-r border-slate-200 bg-slate-950 text-slate-100 lg:flex" style="position: sticky; top: 0; align-self: flex-start; height: 100vh;">
+            <div class="flex min-h-0 w-full flex-col">
                 <div class="border-b border-slate-800 px-6 py-5">
                     <p class="text-xs uppercase tracking-[0.25em] text-slate-400">Owner CMS</p>
                     <h1 class="mt-2 text-lg font-semibold">宿福 SHUKUFUKU</h1>

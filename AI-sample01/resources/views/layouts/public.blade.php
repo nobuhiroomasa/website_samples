@@ -56,6 +56,7 @@
                 aria-controls="mobile-navigation"
                 aria-expanded="false"
                 aria-label="メニューを開く"
+                onclick="document.querySelector('[data-mobile-nav-panel]').hidden = false; document.body.classList.add('overflow-hidden'); this.setAttribute('aria-expanded', 'true');"
             >
                 <span></span>
                 <span></span>
@@ -63,13 +64,13 @@
             </button>
         </div>
 
-        <div id="mobile-navigation" class="mobile-nav-panel lg:hidden" data-mobile-nav-panel hidden>
+        <div id="mobile-navigation" class="mobile-nav-panel" data-mobile-nav-panel hidden>
             <div class="flex items-center justify-between border-b border-white/10 px-5 py-5">
                 <div>
                     <p class="text-xs uppercase tracking-[0.35em] text-white/60">Navigation</p>
                     <p class="mt-2 text-lg font-semibold text-white">{{ $siteSetting->site_title }}</p>
                 </div>
-                <button type="button" class="rounded-full border border-white/15 px-3 py-2 text-sm text-white" data-mobile-nav-close>閉じる</button>
+                <button type="button" class="rounded-full border border-white/15 px-3 py-2 text-sm text-white" data-mobile-nav-close onclick="document.querySelector('[data-mobile-nav-panel]').hidden = true; document.querySelector('[data-mobile-nav-backdrop]').hidden = true; document.body.classList.remove('overflow-hidden'); document.querySelector('[data-mobile-nav-toggle]').setAttribute('aria-expanded', 'false');">閉じる</button>
             </div>
             <nav class="flex flex-col gap-2 px-5 py-6">
                 @foreach ($navItems as $item)
@@ -102,7 +103,7 @@
         @yield('content')
     </main>
 
-    <footer class="mt-20 border-t border-stone-200 bg-[#f8f3eb]">
+    <footer class="mt-20 border-t border-stone-200 bg-[#f2f2f2]">
         <div class="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
             <div>
                 <h2 class="font-serif text-xl font-semibold text-stone-900">宿福 SHUKUFUKU</h2>

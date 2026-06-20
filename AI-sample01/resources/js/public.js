@@ -21,15 +21,19 @@ const setHeaderState = () => {
 };
 
 const setMobileMenu = (open) => {
-    if (!mobilePanel || !mobileBackdrop || !mobileToggle) {
+    if (!mobilePanel || !mobileToggle) {
         return;
     }
 
     mobilePanel.hidden = !open;
-    mobileBackdrop.hidden = !open;
+    if (mobileBackdrop) {
+        mobileBackdrop.hidden = true;
+    }
     document.body.classList.toggle('overflow-hidden', open);
     mobileToggle.setAttribute('aria-expanded', String(open));
 };
+
+window.setShukufukuMobileMenu = setMobileMenu;
 
 const initLoader = () => {
     if (!loader) {
@@ -48,20 +52,34 @@ const initReveal = () => {
         return;
     }
 
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        targets.forEach((target) => {
+            target.classList.add('section-reveal', 'is-visible');
+        });
+
+        return;
+    }
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (!entry.isIntersecting) {
                 return;
             }
 
-            const delay = entry.target.dataset.revealDelay ?? '0';
+            const delay = entry.target.dataset.revealDelay ?? entry.target.dataset.revealAutoDelay ?? '0';
             entry.target.style.transitionDelay = `${delay}ms`;
             entry.target.classList.add('section-reveal', 'is-visible');
             observer.unobserve(entry.target);
         });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.16, rootMargin: '0px 0px -56px 0px' });
 
     targets.forEach((target) => {
+        if (!target.dataset.revealDelay && target.matches('.public-panel, .room-card, .gallery-card')) {
+            const siblings = [...target.parentElement.querySelectorAll('[data-reveal]')];
+            const index = siblings.indexOf(target);
+            target.dataset.revealAutoDelay = String(Math.min(index * 90, 360));
+        }
+
         target.classList.add('section-reveal');
         observer.observe(target);
     });
